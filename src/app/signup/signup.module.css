@@ -1,0 +1,27 @@
+/* 회원가입 페이지 스타일 (로그인과 동일하게 사용) */
+@import "../login/login.module.css";
+
+/* 회원가입 전용 스타일 */
+.signupWrap {
+  min-height: 100vh;
+  display: flex;
+  flex-direction: column;
+  justify-content: center;
+  align-items: center;
+  background: transparent;
+}
+.signupBox {
+  box-shadow: 2px 2px 16px rgba(0,0,0,0.06);
+  border-radius: 12px;
+  padding: 2rem;
+  background: #fff;
+  width: 100%;
+  max-width: 400px;
+  border: 2px solid #1976d2;
+}
+.signupTitle {
+  color: #1976d2;
+  font-weight: 700;
+  margin-bottom: 2rem;
+  text-align: center;
+}

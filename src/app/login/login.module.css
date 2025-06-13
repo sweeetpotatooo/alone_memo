@@ -1,0 +1,33 @@
+/* memo.module.css와 유사하게 스타일 작성, 필요시 수정 가능 */
+.container { max-width: 400px; margin: 60px auto; padding: 32px 24px; background: #fff; border-radius: 8px; box-shadow: 0 2px 16px rgba(0,0,0,0.08); }
+.title { font-size: 2rem; font-weight: bold; text-align: center; margin-bottom: 2rem; }
+.form-group { margin-bottom: 1.5rem; }
+.btn-block { width: 100%; }
+.link { display: block; text-align: center; margin-top: 1.5rem; color: #007bff; text-decoration: none; }
+.link:hover { text-decoration: underline; }
+.error { color: #d32f2f; text-align: center; margin-bottom: 1rem; }
+
+/* 로그인 전용 스타일 */
+.loginWrap {
+  min-height: 100vh;
+  display: flex;
+  flex-direction: column;
+  justify-content: center;
+  align-items: center;
+  background: transparent;
+}
+.loginBox {
+  box-shadow: 2px 2px 16px rgba(0,0,0,0.06);
+  border-radius: 12px;
+  padding: 2rem;
+  background: #fff;
+  width: 100%;
+  max-width: 400px;
+  border: 2px solid #1976d2;
+}
+.loginTitle {
+  color: #1976d2;
+  font-weight: 700;
+  margin-bottom: 2rem;
+  text-align: center;
+}

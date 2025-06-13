@@ -3,3 +3,29 @@
 .card-columns { column-count: 3; }
 .ver-badge { background-color: #666; color: #fff; padding: 4px 8px; border-radius: 4px; font-size: 2rem; vertical-align: middle; margin-left: 0.5rem; display: inline-block; }
 .btn-edit { background-color: #00A386; color: #fff; }
+
+/* 메모(카드/리스트/모달) 전용 스타일 */
+.cardTitle {
+  color: #1976d2;
+  font-weight: 700;
+}
+.cardBox {
+  min-width: 0;
+  max-width: 350px;
+  min-height: 180px;
+  height: 180px;
+  display: flex;
+  flex-direction: column;
+  justify-content: space-between;
+  cursor: pointer;
+  transition: box-shadow 0.2s, transform 0.2s;
+  box-shadow: 2px 2px 16px rgba(0,0,0,0.06);
+  border-radius: 12px;
+  background: #fff;
+}
+.cardBox:hover {
+  box-shadow: 8px 8px 32px rgba(25, 118, 210, 0.12);
+  transform: translateY(-6px) scale(1.03);
+  border: 2px solid #1976d2;
+  z-index: 2;
+}

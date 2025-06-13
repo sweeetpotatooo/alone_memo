@@ -1,31 +1,29 @@
-@import "tailwindcss";
-@import url('https://cdn.jsdelivr.net/npm/bootstrap@4.6.0/dist/css/bootstrap.min.css');
-@import url('https://cdnjs.cloudflare.com/ajax/libs/font-awesome/5.15.4/css/all.min.css');
-@import url('https://fonts.googleapis.com/css?family=Stylish&display=swap');
-
-:root {
-  --background: #ffffff;
-  --foreground: #171717;
-}
-
-@theme inline {
-  --color-background: var(--background);
-  --color-foreground: var(--foreground);
-  --font-sans: var(--font-geist-sans);
-  --font-mono: var(--font-geist-mono);
-}
-
-@media (prefers-color-scheme: dark) {
-  :root {
-    --background: #0a0a0a;
-    --foreground: #ededed;
-  }
-}
-
+/* 글로벌 스타일 */
 body {
-  background: var(--background);
-  color: var(--foreground);
-  font-family: Arial, Helvetica, sans-serif;
+  font-family: 'Noto Sans KR', 'Apple SD Gothic Neo', Arial, sans-serif;
+  background: #f8fafc;
+  color: #222;
+  margin: 0;
+  padding: 0;
+}
+a {
+  color: #1976d2;
+  text-decoration: none;
+}
+a:hover {
+  text-decoration: underline;
+}
+button, input, textarea {
+  font-family: inherit;
 }
 
-* { font-family: "Stylish", sans-serif; }
+/* MUI 버튼 공통 스타일 오버라이드 예시 */
+.MuiButton-containedPrimary {
+  background-color: #1976d2;
+  color: #fff;
+}
+.MuiButton-containedPrimary:hover {
+  background-color: #115293;
+}
+
+/* 기타 공통 스타일은 여기에 추가 */

@@ -8,6 +8,9 @@
 .cardTitle {
   color: #1976d2;
   font-weight: 700;
+  white-space: nowrap;
+  overflow: hidden;
+  text-overflow: ellipsis;
 }
 .cardBox {
   min-width: 0;

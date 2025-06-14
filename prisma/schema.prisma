@@ -20,6 +20,8 @@ model User {
   memos   Memo[]
   likes   Like[]
   comments Comment[]
+  notifications Notification[] // 내가 받은 알림
+  notificationsFromMe Notification[] @relation("FromUser") // 내가 발생시킨 알림
 }
 
 model Memo {
@@ -27,16 +29,18 @@ model Memo {
   title   String
   content String
   likes   Int      @default(0)
-  user    User     @relation(fields: [userId], references: [id])
+  createdAt DateTime @default(now())
+  user    User     @relation(fields: [userId], references: [id], onDelete: Cascade)
   userId  String
   likesBy Like[]
   comments Comment[]
+  notifications Notification[]
 }
 
 model Like {
-  user   User   @relation(fields: [userId], references: [id])
+  user   User   @relation(fields: [userId], references: [id], onDelete: Cascade)
   userId String
-  memo   Memo   @relation(fields: [memoId], references: [id])
+  memo   Memo   @relation(fields: [memoId], references: [id], onDelete: Cascade)
   memoId String
 
   @@id([userId, memoId])
@@ -46,8 +50,22 @@ model Comment {
   id        String   @id @default(uuid())
   content   String
   createdAt DateTime @default(now())
-  user      User     @relation(fields: [userId], references: [id])
+  user      User     @relation(fields: [userId], references: [id], onDelete: Cascade)
   userId    String
-  memo      Memo     @relation(fields: [memoId], references: [id])
+  memo      Memo     @relation(fields: [memoId], references: [id], onDelete: Cascade)
   memoId    String
+}
+
+model Notification {
+  id         String   @id @default(uuid())
+  type       String   // 'comment', 'like', 'create', 'update', 'delete' 등
+  message    String
+  user       User     @relation(fields: [userId], references: [id], onDelete: Cascade) // 알림 받을 유저
+  userId     String
+  fromUser   User?    @relation("FromUser", fields: [fromUserId], references: [id], onDelete: Cascade) // 알림 발생시킨 유저(선택)
+  fromUserId String?
+  memo       Memo?    @relation(fields: [memoId], references: [id], onDelete: Cascade)
+  memoId     String?
+  read       Boolean  @default(false)
+  createdAt  DateTime @default(now())
 }

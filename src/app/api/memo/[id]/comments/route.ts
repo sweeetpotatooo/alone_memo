@@ -8,9 +8,10 @@ const JWT_SECRET = process.env.JWT_SECRET || 'dev_secret';
 // 댓글 GET/POST
 export async function GET(
   req: NextRequest,
-  { params }: { params: { id: string } }
+  context: { params: { id: string } }
 ) {
-  const memoId = params.id;
+  const { id } = await context.params;
+  const memoId = id;
   const comments = await prisma.comment.findMany({
     where: { memoId },
     orderBy: { createdAt: 'asc' },
@@ -20,9 +21,10 @@ export async function GET(
 
 export async function POST(
   req: NextRequest,
-  { params }: { params: { id: string } }
+  context: { params: { id: string } }
 ) {
-  const memoId = params.id;
+  const { id } = await context.params;
+  const memoId = id;
   const auth = req.headers.get('authorization');
   if (!auth) return NextResponse.json({ result: 'fail', msg: '인증 필요' }, { status: 401 });
   const token = auth.replace('Bearer ', '');
@@ -40,14 +42,29 @@ export async function POST(
   const comment = await prisma.comment.create({
     data: { content, userId, memoId },
   });
+  // 알림: 댓글(글 작성자에게)
+  const memo = await prisma.memo.findUnique({ where: { id: memoId } });
+  if (memo && memo.userId !== userId) {
+    await prisma.notification.create({
+      data: {
+        type: 'comment',
+        message: `${userId}님이 내 메모에 댓글을 남겼습니다.`,
+        userId: memo.userId,
+        fromUserId: userId,
+        memoId,
+      },
+    });
+  }
   return NextResponse.json({ result: 'success', comment });
 }
 
 // PATCH: 댓글 수정, DELETE: 댓글 삭제
 export async function PATCH(
   req: NextRequest,
-  { params }: { params: { id: string } }
+  context: { params: { id: string } }
 ) {
+  const { id } = await context.params;
+  const memoId = id;
   const auth = req.headers.get('authorization');
   if (!auth) return NextResponse.json({ result: 'fail', msg: '인증 필요' }, { status: 401 });
   const token = auth.replace('Bearer ', '');
@@ -69,8 +86,10 @@ export async function PATCH(
 
 export async function DELETE(
   req: NextRequest,
-  { params }: { params: { id: string } }
+  context: { params: { id: string } }
 ) {
+  const { id } = await context.params;
+  const memoId = id;
   const auth = req.headers.get('authorization');
   if (!auth) return NextResponse.json({ result: 'fail', msg: '인증 필요' }, { status: 401 });
   const token = auth.replace('Bearer ', '');

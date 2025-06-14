@@ -14,6 +14,7 @@ import EditIcon from "@mui/icons-material/Edit";
 import ThumbUpAltOutlinedIcon from "@mui/icons-material/ThumbUpAltOutlined";
 import PersonOutlineIcon from "@mui/icons-material/PersonOutline";
 import CloseIcon from "@mui/icons-material/Close";
+import AccessTimeIcon from "@mui/icons-material/AccessTime";
 
 interface Memo {
   id: string;
@@ -63,8 +64,8 @@ export default function MemoModal({ memo, onClose, onUpdated }: MemoModalProps) 
   // 좋아요 상태 초기화 (모달 열릴 때마다)
   React.useEffect(() => {
     setLikeCount(memo.likes);
-    // 서버에서 liked 정보 가져오기
     async function fetchLiked() {
+      console.time('fetch-liked');
       const res = await fetch("/api/like", {
         method: "POST",
         headers: {
@@ -74,6 +75,7 @@ export default function MemoModal({ memo, onClose, onUpdated }: MemoModalProps) 
         body: JSON.stringify({ id: memo.id, checkOnly: true }),
       });
       const data = await res.json();
+      console.timeEnd('fetch-liked');
       if (data.result === "success" && typeof data.liked === "boolean") {
         setLiked(data.liked);
       } else {
@@ -84,10 +86,11 @@ export default function MemoModal({ memo, onClose, onUpdated }: MemoModalProps) 
   }, [memo.id, memo.likes]);
 
   React.useEffect(() => {
-    // 댓글 불러오기
+    console.time('fetch-comments');
     fetch(`/api/memo/${memo.id}/comments`)
       .then(res => res.json())
       .then(data => {
+        console.timeEnd('fetch-comments');
         if (data.result === "success") setComments(data.comments);
       });
   }, [memo.id]);
@@ -95,6 +98,7 @@ export default function MemoModal({ memo, onClose, onUpdated }: MemoModalProps) 
   async function handleSave() {
     setLoading(true);
     setError("");
+    console.time('memo-save');
     const res = await fetch("/api/memo", {
       method: "PATCH",
       headers: {
@@ -104,6 +108,7 @@ export default function MemoModal({ memo, onClose, onUpdated }: MemoModalProps) 
       body: JSON.stringify({ id: memo.id, title_give: title, content_give: content }),
     });
     const data = await res.json();
+    console.timeEnd('memo-save');
     setLoading(false);
     if (data.result === "success") {
       setEditMode(false);
@@ -142,6 +147,7 @@ export default function MemoModal({ memo, onClose, onUpdated }: MemoModalProps) 
       setCommentError("댓글을 입력하세요.");
       return;
     }
+    console.time('comment-submit');
     const res = await fetch(`/api/memo/${memo.id}/comments`, {
       method: "POST",
       headers: {
@@ -151,6 +157,7 @@ export default function MemoModal({ memo, onClose, onUpdated }: MemoModalProps) 
       body: JSON.stringify({ content: commentInput }),
     });
     const data = await res.json();
+    console.timeEnd('comment-submit');
     if (data.result === "success") {
       setCommentInput("");
       setComments((prev) => [...prev, data.comment]);
@@ -206,6 +213,7 @@ export default function MemoModal({ memo, onClose, onUpdated }: MemoModalProps) 
 
   async function handleLike() {
     setLikeLoading(true);
+    console.time('like');
     const res = await fetch("/api/like", {
       method: "POST",
       headers: {
@@ -215,6 +223,7 @@ export default function MemoModal({ memo, onClose, onUpdated }: MemoModalProps) 
       body: JSON.stringify({ id: memo.id }),
     });
     const data = await res.json();
+    console.timeEnd('like');
     setLikeLoading(false);
     if (data.result === "success") {
       setLiked(data.liked);
@@ -223,6 +232,9 @@ export default function MemoModal({ memo, onClose, onUpdated }: MemoModalProps) 
     }
   }
 
+  // 렌더링 시간 측정
+  console.log('MemoModal 렌더링됨', new Date().toISOString());
+
   return (
     <Modal open onClose={onClose}>
       <Box sx={{
@@ -230,7 +242,15 @@ export default function MemoModal({ memo, onClose, onUpdated }: MemoModalProps) 
         bgcolor: "background.paper", boxShadow: 24, p: 4, borderRadius: 2, minWidth: 500, maxWidth: 800
       }}>
         <Stack direction="row" alignItems="center" justifyContent="space-between" spacing={1} mb={2}>
-          <Typography variant="h5" sx={{ wordBreak: 'break-all' }}>{memo.title}</Typography>
+          <Stack direction="row" alignItems="center" spacing={1}>
+            <Typography variant="h5" sx={{ wordBreak: 'break-all' }}>{memo.title}</Typography>
+            <Stack direction="row" alignItems="center" spacing={0.5} ml={1}>
+              <AccessTimeIcon fontSize="small"/>
+              <Typography variant="body2" color="text.secondary">
+                {new Date(memo.createdAt).toLocaleDateString("ko-KR", { year: '2-digit', month: '2-digit', day: '2-digit' })}
+              </Typography>
+            </Stack>
+          </Stack>
           {userId === memo.userId && (
             <Stack direction="row" spacing={1}>
               <IconButton color="info" onClick={() => setEditMode(true)} disabled={loading} size="small"><EditIcon /></IconButton>
@@ -268,7 +288,7 @@ export default function MemoModal({ memo, onClose, onUpdated }: MemoModalProps) 
                   <Typography variant="body2" color="text.secondary">{likeCount}</Typography>
                 </Stack>
                 <Stack direction="row" alignItems="center" spacing={0.5}>
-                  <PersonOutlineIcon fontSize="small" color="action" />
+                  <PersonOutlineIcon fontSize="small"/>
                   <Typography variant="body2" color="text.secondary">{memo.userId}</Typography>
                 </Stack>
               </Stack>
@@ -318,6 +338,13 @@ export default function MemoModal({ memo, onClose, onUpdated }: MemoModalProps) 
                 size="small"
                 error={!!commentError}
                 helperText={commentError}
+                slotProps={{
+                  input: {
+                    sx: {
+                      bgcolor: (theme) => theme.palette.mode === 'dark' ? '#23272a' : '#fff',
+                    }
+                  }
+                }}
               />
               <Button variant="contained" onClick={handleCommentSubmit}>등록</Button>
             </Stack>

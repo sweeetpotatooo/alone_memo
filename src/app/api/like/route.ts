@@ -32,6 +32,18 @@ export async function POST(req: NextRequest) {
     // 좋아요 추가
     await prisma.like.create({ data: { userId, memoId: id } });
     const memo = await prisma.memo.update({ where: { id }, data: { likes: { increment: 1 } } });
+    // 알림: 좋아요(글 작성자에게)
+    if (memo.userId !== userId) {
+      await prisma.notification.create({
+        data: {
+          type: 'like',
+          message: `${userId}님이 내 메모에 좋아요를 눌렀습니다.`,
+          userId: memo.userId,
+          fromUserId: userId,
+          memoId: id,
+        },
+      });
+    }
     return NextResponse.json({ result: 'success', liked: true, new_likes: memo.likes });
   }
 }

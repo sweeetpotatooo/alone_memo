@@ -48,7 +48,7 @@ export async function POST(
     await prisma.notification.create({
       data: {
         type: 'comment',
-        message: `${userId}님이 내 메모에 댓글을 남겼습니다.`,
+        message: `${userId}님이 댓글을 남겼습니다.`,
         userId: memo.userId,
         fromUserId: userId,
         memoId,

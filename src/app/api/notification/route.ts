@@ -42,3 +42,18 @@ export async function PATCH(req: NextRequest) {
   });
   return NextResponse.json({ result: 'success' });
 }
+
+// DELETE: 알림 삭제
+export async function DELETE(req: NextRequest) {
+  const userId = getUserIdFromRequest(req);
+  if (!userId) return NextResponse.json({ result: 'fail', msg: '인증 필요' }, { status: 401 });
+  const { id } = await req.json(); // id: string
+  const deleted = await prisma.notification.deleteMany({
+    where: { id, userId },
+  });
+  if (deleted.count > 0) {
+    return NextResponse.json({ result: 'success' });
+  } else {
+    return NextResponse.json({ result: 'fail', msg: '삭제할 알림이 없습니다.' }, { status: 404 });
+  }
+}

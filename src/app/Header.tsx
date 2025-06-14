@@ -4,6 +4,7 @@ import { useRouter, usePathname } from "next/navigation";
 import { AppBar, Toolbar, Typography, Button, Box, Stack, IconButton } from "@mui/material";
 import DarkModeIcon from '@mui/icons-material/DarkMode';
 import NotificationsIcon from '@mui/icons-material/Notifications';
+import DeleteIcon from '@mui/icons-material/Delete';
 import Drawer from '@mui/material/Drawer';
 import styles from "./memo/memo.module.css";
 
@@ -72,6 +73,17 @@ export default function Header() {
     setUnreadCount((prev) => prev - ids.length);
   }
 
+  // 알림 삭제 함수 추가
+  async function deleteNotification(id: string) {
+    await fetch('/api/notification', {
+      method: 'DELETE',
+      headers: { 'Content-Type': 'application/json', Authorization: `Bearer ${localStorage.getItem('token')}` },
+      body: JSON.stringify({ id }),
+    });
+    setNotifications((prev) => prev.filter(n => n.id !== id));
+    setUnreadCount((prev) => prev - 1);
+  }
+
   if (pathname === "/login" || pathname === "/signup") return null;
 
   return (
@@ -114,9 +126,14 @@ export default function Header() {
                     {notifications.length === 0 ? (
                       <Typography color="text.secondary" fontSize={14} textAlign="center" py={2}>알림이 없습니다.</Typography>
                     ) : notifications.map((n) => (
-                      <Box key={n.id} sx={{ px: 1, py: 1, borderBottom: '1px solid #eee', bgcolor: n.read ? 'inherit' : '#e3f2fd', cursor: 'pointer' }} onClick={() => { if (!n.read) markNotificationsRead([n.id]); if (n.memoId) router.push(`/memo`); setNotiOpen(false); }}>
-                        <Typography fontSize={14} color={n.read ? 'text.secondary' : 'primary'}>{n.message}</Typography>
-                        <Typography fontSize={12} color="text.secondary">{new Date(n.createdAt).toLocaleString('ko-KR')}</Typography>
+                      <Box key={n.id} sx={{ px: 1, py: 1, borderBottom: '1px solid #eee', bgcolor: n.read ? 'inherit' : '#e3f2fd', cursor: 'pointer', display: 'flex', alignItems: 'center', justifyContent: 'space-between' }}>
+                        <Box onClick={() => { if (!n.read) markNotificationsRead([n.id]); if (n.memoId) router.push(`/memo`); setNotiOpen(false); }} sx={{ flex: 1, minWidth: 0 }}>
+                          <Typography fontSize={14} color={n.read ? 'text.secondary' : 'primary'}>{n.message}</Typography>
+                          <Typography fontSize={12} color="text.secondary">{new Date(n.createdAt).toLocaleString('ko-KR')}</Typography>
+                        </Box>
+                        <IconButton size="small" onClick={() => deleteNotification(n.id)} aria-label="알림 삭제" sx={{ ml: 1 }}>
+                          <DeleteIcon fontSize="small" />
+                        </IconButton>
                       </Box>
                     ))}
                   </Box>

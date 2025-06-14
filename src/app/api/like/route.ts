@@ -37,7 +37,7 @@ export async function POST(req: NextRequest) {
       await prisma.notification.create({
         data: {
           type: 'like',
-          message: `${userId}님이 내 메모에 좋아요를 눌렀습니다.`,
+          message: `${userId}님이 좋아요를 눌렀습니다.`,
           userId: memo.userId,
           fromUserId: userId,
           memoId: id,

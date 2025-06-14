@@ -24,7 +24,6 @@ import ViewListIcon from "@mui/icons-material/ViewList";
 import ViewModuleIcon from "@mui/icons-material/ViewModule";
 import SearchIcon from "@mui/icons-material/Search";
 import SortIcon from '@mui/icons-material/Sort';
-import Link from "next/link";
 
 interface Memo {
   id: string; 
@@ -147,142 +146,142 @@ export default function MemoPage() {
         {viewType === 'card' ? (
           <Box display="grid" gridTemplateColumns="repeat(3, 1fr)" gap={2} minHeight={pagedMemos.length > 0 ? 0 : 300}>
             {pagedMemos.map((memo) => (
-              <Link href={`/memo/${memo.id}`} prefetch passHref key={memo.id} style={{ textDecoration: 'none' }}>
-                <Card
-                  sx={{
-                    minWidth: 0,
-                    maxWidth: 350,
-                    minHeight: 180,
-                    height: 180,
-                    display: 'flex',
-                    flexDirection: 'column',
-                    justifyContent: 'space-between',
-                    cursor: "pointer",
-                    transition: 'box-shadow 0.2s, transform 0.2s',
-                    boxShadow: 2,
-                    '&:hover': {
-                      boxShadow: 8,
-                      transform: 'translateY(-6px) scale(1.03)',
-                      border: '2px solid #1976d2',
-                      zIndex: 2,
-                    },
-                  }}
-                >
-                  <CardContent>
-                    <Typography variant="h6" gutterBottom sx={{ color: '#1976d2' }}>
-                      {memo.title}
-                    </Typography>
-                    <Stack direction="row" alignItems="center" spacing={2} mb={1}>
-                      <Stack direction="row" alignItems="center" spacing={0.5}>
-                        <IconButton
-                          onClick={async (e) => {
-                            e.stopPropagation();
-                            const res = await fetch("/api/like", {
-                              method: "POST",
-                              headers: {
-                                "Content-Type": "application/json",
-                                Authorization: `Bearer ${localStorage.getItem("token")}`,
-                              },
-                              body: JSON.stringify({ id: memo.id }),
-                            });
-                            const data = await res.json();
-                            setLikedMap((prev) => ({ ...prev, [memo.id]: data.liked }));
-                            loadMemos();
-                          }}
-                          color={likedMap[memo.id] ? "primary" : "default"}
-                        >
-                          <ThumbUpAltOutlinedIcon fontSize="small" />
-                        </IconButton>
-                        <Typography variant="body2" color="text.secondary">
-                          {memo.likes}
-                        </Typography>
-                      </Stack>
-                      <Stack direction="row" alignItems="center" spacing={0.5}>
-                        <PersonOutlineIcon fontSize="small"/>
-                        <Typography variant="body2" color="text.secondary">
-                          {memo.userId}
-                        </Typography>
-                      </Stack>
-                    </Stack>
-                    <Stack direction="row" alignItems="center" spacing={0.5} mb={1}>
-                      <AccessTimeIcon fontSize="small"/>
+              <Card
+                key={memo.id}
+                sx={{
+                  minWidth: 0,
+                  maxWidth: 350,
+                  minHeight: 180,
+                  height: 180,
+                  display: 'flex',
+                  flexDirection: 'column',
+                  justifyContent: 'space-between',
+                  cursor: "pointer",
+                  transition: 'box-shadow 0.2s, transform 0.2s',
+                  boxShadow: 2,
+                  '&:hover': {
+                    boxShadow: 8,
+                    transform: 'translateY(-6px) scale(1.03)',
+                    border: '2px solid #1976d2',
+                    zIndex: 2,
+                  },
+                }}
+                onClick={() => setSelectedMemo(memo)}
+              >
+                <CardContent>
+                  <Typography variant="h6" gutterBottom sx={{ color: '#1976d2' }}>
+                    {memo.title}
+                  </Typography>
+                  <Stack direction="row" alignItems="center" spacing={2} mb={1}>
+                    <Stack direction="row" alignItems="center" spacing={0.5}>
+                      <IconButton
+                        onClick={async (e) => {
+                          e.stopPropagation();
+                          const res = await fetch("/api/like", {
+                            method: "POST",
+                            headers: {
+                              "Content-Type": "application/json",
+                              Authorization: `Bearer ${localStorage.getItem("token")}`,
+                            },
+                            body: JSON.stringify({ id: memo.id }),
+                          });
+                          const data = await res.json();
+                          setLikedMap((prev) => ({ ...prev, [memo.id]: data.liked }));
+                          loadMemos();
+                        }}
+                        color={likedMap[memo.id] ? "primary" : "default"}
+                      >
+                        <ThumbUpAltOutlinedIcon fontSize="small" />
+                      </IconButton>
                       <Typography variant="body2" color="text.secondary">
-                        {new Date(memo.createdAt).toLocaleDateString("ko-KR", { year: '2-digit', month: '2-digit', day: '2-digit' })}
+                        {memo.likes}
                       </Typography>
                     </Stack>
-                    <Typography variant="body2" color="text.secondary" gutterBottom>
-                      {memo.content.length > 40 ? memo.content.slice(0, 40) + "..." : memo.content}
+                    <Stack direction="row" alignItems="center" spacing={0.5}>
+                      <PersonOutlineIcon fontSize="small"/>
+                      <Typography variant="body2" color="text.secondary">
+                        {memo.userId}
+                      </Typography>
+                    </Stack>
+                  </Stack>
+                  <Stack direction="row" alignItems="center" spacing={0.5} mb={1}>
+                    <AccessTimeIcon fontSize="small"/>
+                    <Typography variant="body2" color="text.secondary">
+                      {new Date(memo.createdAt).toLocaleDateString("ko-KR", { year: '2-digit', month: '2-digit', day: '2-digit' })}
                     </Typography>
-                  </CardContent>
-                </Card>
-              </Link>
+                  </Stack>
+                  <Typography variant="body2" color="text.secondary" gutterBottom>
+                    {memo.content.length > 40 ? memo.content.slice(0, 40) + "..." : memo.content}
+                  </Typography>
+                </CardContent>
+              </Card>
             ))}
           </Box>
         ) : (
           <Box minHeight={pagedMemos.length > 0 ? 0 : 300}>
             <Stack spacing={1}>
               {pagedMemos.map((memo) => (
-                <Link href={`/memo/${memo.id}`} prefetch passHref key={memo.id} style={{ textDecoration: 'none' }}>
-                  <Card
-                    sx={{
-                      width: '100%',
-                      minHeight: 80,
-                      display: 'flex',
-                      alignItems: 'center',
-                      px: 2,
-                      py: 1,
-                      boxShadow: 1,
-                      mb: 1,
-                      cursor: 'pointer',
-                      transition: 'box-shadow 0.2s, background 0.2s',
-                      '&:hover': {
-                        boxShadow: 6,
-                        background: '#f0f7ff',
-                      },
-                    }}
-                  >
-                    <Stack direction="row" alignItems="center" spacing={2} width="100%">
-                      <Typography variant="subtitle1" fontWeight={700} sx={{ minWidth: 120 }}>
-                        {memo.title}
+                <Card
+                  key={memo.id}
+                  sx={{
+                    width: '100%',
+                    minHeight: 80,
+                    display: 'flex',
+                    alignItems: 'center',
+                    px: 2,
+                    py: 1,
+                    boxShadow: 1,
+                    mb: 1,
+                    cursor: 'pointer',
+                    transition: 'box-shadow 0.2s, background 0.2s',
+                    '&:hover': {
+                      boxShadow: 6,
+                      background: '#f0f7ff',
+                    },
+                  }}
+                  onClick={() => setSelectedMemo(memo)}
+                >
+                  <Stack direction="row" alignItems="center" spacing={2} width="100%">
+                    <Typography variant="subtitle1" fontWeight={700} sx={{ minWidth: 120 }}>
+                      {memo.title}
+                    </Typography>
+                    <Typography variant="body2" color="text.secondary" sx={{ flex: 1 }}>
+                      {memo.content.length > 40 ? memo.content.slice(0, 40) + "..." : memo.content}
+                    </Typography>
+                    <Stack direction="row" alignItems="center" spacing={1}>
+                      <IconButton
+                        onClick={async (e) => {
+                          e.stopPropagation();
+                          const res = await fetch("/api/like", {
+                            method: "POST",
+                            headers: {
+                              "Content-Type": "application/json",
+                              Authorization: `Bearer ${localStorage.getItem("token")}`,
+                            },
+                            body: JSON.stringify({ id: memo.id }),
+                          });
+                          const data = await res.json();
+                          setLikedMap((prev) => ({ ...prev, [memo.id]: data.liked }));
+                          loadMemos();
+                        }}
+                        color={likedMap[memo.id] ? "primary" : "default"}
+                      >
+                        <ThumbUpAltOutlinedIcon fontSize="small" />
+                      </IconButton>
+                      <Typography variant="body2" color="text.secondary">
+                        {memo.likes}
                       </Typography>
-                      <Typography variant="body2" color="text.secondary" sx={{ flex: 1 }}>
-                        {memo.content.length > 40 ? memo.content.slice(0, 40) + "..." : memo.content}
+                      <PersonOutlineIcon fontSize="small" sx={{ color: 'text.primary' }} />
+                      <Typography variant="body2" color="text.secondary">
+                        {memo.userId}
                       </Typography>
-                      <Stack direction="row" alignItems="center" spacing={1}>
-                        <IconButton
-                          onClick={async (e) => {
-                            e.stopPropagation();
-                            const res = await fetch("/api/like", {
-                              method: "POST",
-                              headers: {
-                                "Content-Type": "application/json",
-                                Authorization: `Bearer ${localStorage.getItem("token")}`,
-                              },
-                              body: JSON.stringify({ id: memo.id }),
-                            });
-                            const data = await res.json();
-                            setLikedMap((prev) => ({ ...prev, [memo.id]: data.liked }));
-                            loadMemos();
-                          }}
-                          color={likedMap[memo.id] ? "primary" : "default"}
-                        >
-                          <ThumbUpAltOutlinedIcon fontSize="small" />
-                        </IconButton>
-                        <Typography variant="body2" color="text.secondary">
-                          {memo.likes}
-                        </Typography>
-                        <PersonOutlineIcon fontSize="small" sx={{ color: 'text.primary' }} />
-                        <Typography variant="body2" color="text.secondary">
-                          {memo.userId}
-                        </Typography>
-                        <AccessTimeIcon fontSize="small" sx={{ color: 'text.primary' }} />
-                        <Typography variant="body2" color="text.secondary">
-                          {new Date(memo.createdAt).toLocaleDateString("ko-KR", { year: '2-digit', month: '2-digit', day: '2-digit' })}
-                        </Typography>
-                      </Stack>
+                      <AccessTimeIcon fontSize="small" sx={{ color: 'text.primary' }} />
+                      <Typography variant="body2" color="text.secondary">
+                        {new Date(memo.createdAt).toLocaleDateString("ko-KR", { year: '2-digit', month: '2-digit', day: '2-digit' })}
+                      </Typography>
                     </Stack>
-                  </Card>
-                </Link>
+                  </Stack>
+                </Card>
               ))}
             </Stack>
           </Box>

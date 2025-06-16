@@ -2,7 +2,6 @@
 import { useEffect, useState, useCallback } from "react";
 import {
   Box,
-  Button,
   Container,
   Typography,
   Card,
@@ -91,6 +90,16 @@ export default function MemoPage() {
     loadMemos(page);
   }, [page, sortType, search, loadMemos]);
 
+  useEffect(() => {
+    // 로그인 여부 확인
+    const token = typeof window !== "undefined" ? localStorage.getItem("token") : null;
+    if (!token) {
+      alert("로그인 후 이용 가능합니다.");
+      router.replace("/login");
+      return;
+    }
+  }, [router]);
+
   return (
     <Container maxWidth="md" sx={{ py: 4 }}>
       <Box mb={4}>
@@ -105,7 +114,7 @@ export default function MemoPage() {
           </Stack>
           <Stack direction="row" alignItems="center" spacing={1}>
             <Box component="form" onSubmit={e => { e.preventDefault(); }} sx={{ display: 'flex', alignItems: 'center', bgcolor: '#f5f5f5', borderRadius: 1, px: 1, mr: 1 }}>
-              <SearchIcon color="action" />
+              <SearchIcon />
               <input
                 type="text"
                 placeholder="검색어를 입력하세요"

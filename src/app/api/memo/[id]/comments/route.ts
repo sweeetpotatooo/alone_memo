@@ -6,25 +6,21 @@ const prisma = new PrismaClient();
 const JWT_SECRET = process.env.JWT_SECRET || 'dev_secret';
 
 // 댓글 GET/POST
-export async function GET(
-  req: NextRequest,
-  context: { params: { id: string } }
-) {
-  const { id } = await context.params;
-  const memoId = id;
+export async function GET(req: NextRequest) {
+  // id 파라미터는 req.nextUrl로부터 추출
+  const url = req.nextUrl;
+  const id = url.pathname.split('/').slice(-2)[0];
   const comments = await prisma.comment.findMany({
-    where: { memoId },
+    where: { memoId: id },
     orderBy: { createdAt: 'asc' },
   });
   return NextResponse.json({ result: 'success', comments });
 }
 
-export async function POST(
-  req: NextRequest,
-  context: { params: { id: string } }
-) {
-  const { id } = await context.params;
-  const memoId = id;
+export async function POST(req: NextRequest) {
+  // id 파라미터는 req.nextUrl로부터 추출
+  const url = req.nextUrl;
+  const id = url.pathname.split('/').slice(-2)[0];
   const auth = req.headers.get('authorization');
   if (!auth) return NextResponse.json({ result: 'fail', msg: '인증 필요' }, { status: 401 });
   const token = auth.replace('Bearer ', '');
@@ -40,10 +36,10 @@ export async function POST(
     return NextResponse.json({ result: 'fail', msg: '댓글 내용을 입력하세요.' }, { status: 400 });
   }
   const comment = await prisma.comment.create({
-    data: { content, userId, memoId },
+    data: { content, userId, memoId: id },
   });
   // 알림: 댓글(글 작성자에게)
-  const memo = await prisma.memo.findUnique({ where: { id: memoId } });
+  const memo = await prisma.memo.findUnique({ where: { id } });
   if (memo && memo.userId !== userId) {
     await prisma.notification.create({
       data: {
@@ -51,7 +47,7 @@ export async function POST(
         message: `${userId}님이 댓글을 남겼습니다.`,
         userId: memo.userId,
         fromUserId: userId,
-        memoId,
+        memoId: id,
       },
     });
   }
@@ -59,12 +55,7 @@ export async function POST(
 }
 
 // PATCH: 댓글 수정, DELETE: 댓글 삭제
-export async function PATCH(
-  req: NextRequest,
-  context: { params: { id: string } }
-) {
-  const { id } = await context.params;
-  const memoId = id;
+export async function PATCH(req: NextRequest) {
   const auth = req.headers.get('authorization');
   if (!auth) return NextResponse.json({ result: 'fail', msg: '인증 필요' }, { status: 401 });
   const token = auth.replace('Bearer ', '');
@@ -84,12 +75,7 @@ export async function PATCH(
   return NextResponse.json({ result: 'success' });
 }
 
-export async function DELETE(
-  req: NextRequest,
-  context: { params: { id: string } }
-) {
-  const { id } = await context.params;
-  const memoId = id;
+export async function DELETE(req: NextRequest) {
   const auth = req.headers.get('authorization');
   if (!auth) return NextResponse.json({ result: 'fail', msg: '인증 필요' }, { status: 401 });
   const token = auth.replace('Bearer ', '');

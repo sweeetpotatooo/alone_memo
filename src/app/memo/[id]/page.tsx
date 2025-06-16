@@ -1,10 +1,13 @@
 import { notFound } from "next/navigation";
 
-export default async function MemoDetailPage({ params }: { params: { id: string } }) {
+export default async function Page({ params }: { params: { id: string } }) {
   const baseUrl = process.env.NEXT_PUBLIC_BASE_URL || "http://localhost:3000";
   const res = await fetch(`${baseUrl}/api/memo`, { cache: 'no-store' });
   const data = await res.json();
-  const memo = data.memos?.find((m: any) => m.id === params.id);
+  
+  // 타입 에러 방지: any 대신 Memo 타입 사용
+  type Memo = { id: string; title: string; content: string; likes: number; createdAt: string; userId: string };
+  const memo = (data.memos as Memo[])?.find((m) => m.id === params.id);
   if (!memo) return notFound();
 
   return (

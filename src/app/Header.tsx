@@ -37,7 +37,7 @@ export default function Header() {
   // 드롭다운 외부 클릭 시 닫힘 처리
   useEffect(() => {
     if (!dropdownOpen) return;
-    function handleClick(e: Event) {
+    function handleClick() {
       setDropdownOpen(false);
     }
     window.addEventListener('click', handleClick);

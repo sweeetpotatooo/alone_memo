@@ -103,10 +103,6 @@ export async function DELETE(req: NextRequest) {
     const { id } = await req.json();
     const memo = await prisma.memo.findUnique({ where: { id } });
     if (!memo || memo.userId !== userId) return NextResponse.json({ result: 'fail', msg: '권한 없음' }, { status: 403 });
-    // 관련 댓글/좋아요 먼저 삭제
-    await prisma.comment.deleteMany({ where: { memoId: id } });
-    await prisma.like.deleteMany({ where: { memoId: id } });
-    await prisma.memo.delete({ where: { id } });
     // 알림: 글 삭제(본인에게만)
     await prisma.notification.create({
       data: {
@@ -117,6 +113,10 @@ export async function DELETE(req: NextRequest) {
         memoId: id,
       },
     });
+    // 관련 댓글/좋아요 먼저 삭제
+    await prisma.comment.deleteMany({ where: { memoId: id } });
+    await prisma.like.deleteMany({ where: { memoId: id } });
+    await prisma.memo.delete({ where: { id } });
     return NextResponse.json({ result: 'success', msg: '삭제 완료' });
   } catch (error) {
     console.error('Memo DELETE error:', error);

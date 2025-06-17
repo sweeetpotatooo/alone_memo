@@ -134,6 +134,7 @@ export default function MemoModal({ memo, onClose, onUpdated }: MemoModalProps) 
     const data = await res.json();
     setLoading(false);
     if (data.result === "success") {
+      setError(""); // 삭제 성공 시 에러 메시지 초기화
       onUpdated();
       onClose();
     } else {

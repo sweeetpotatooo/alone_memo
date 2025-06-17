@@ -1,0 +1,6 @@
+{
+  "extends": ["next/core-web-vitals"],
+  "rules": {
+    // 여기에 프로젝트별 커스텀 룰을 추가할 수 있습니다.
+  }
+}

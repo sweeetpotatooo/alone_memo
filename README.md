@@ -2,7 +2,7 @@
 
 ## 소개
 - Next.js 14 기반의 개인 메모/댓글/알림 웹앱
-- Prisma, SQLite, MUI, JWT 인증, CI/CD, E2E(Jest, Cypress) 지원
+- Prisma, SQL, MUI, JWT 인증, CI/CD, E2E(Jest, Cypress) 지원
 
 ## 주요 기능
 - 회원가입/로그인/로그아웃 (JWT 기반)
